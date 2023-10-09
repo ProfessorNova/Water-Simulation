@@ -1,0 +1,1 @@
+window = pyglet.window.Window(WIDTH, HEIGHT)

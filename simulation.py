@@ -7,7 +7,7 @@ import colorsys
 FPS = 60
 WIDTH = 800
 HEIGHT = 600
-GRAVITY = -300  # Gravity in pixels/s^2
+GRAVITY = 0  # Gravity in pixels/s^2
 DAMPING = 0.75  # Damping factor (1 means no damping)
 BALL_COUNT = 10  # Number of balls
 MAX_VELOCITY = 300  # Define a max velocity for color scaling
@@ -28,12 +28,13 @@ def velocity_to_color(velocity):
     # Normalize velocity to range [0, 1]
     normalized_velocity = min(1, (velocity / MAX_VELOCITY))
     # Convert to HSV, where hue varies with velocity
-    h = 0.33 - (normalized_velocity * 0.33)  # Flipping the scale
+    h = 0.66 * (1 - normalized_velocity)  # Adjusted scale to go from red to blue
     s = 1
     v = 1
     # Convert HSV to RGB
     r, g, b = [int(c * 255) for c in colorsys.hsv_to_rgb(h, s, v)]
     return r, g, b
+
 
 def update(dt):
     for ball in balls:
