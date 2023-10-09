@@ -7,7 +7,7 @@ import colorsys
 FPS = 60
 WIDTH = 800
 HEIGHT = 600
-GRAVITY = 0  # Gravity in pixels/s^2
+GRAVITY = 1000 # Gravity in pixels/s^2
 DAMPING = 0.75  # Damping factor (1 means no damping)
 BALL_COUNT = 10  # Number of balls
 MAX_VELOCITY = 300  # Define a max velocity for color scaling
@@ -39,7 +39,7 @@ def velocity_to_color(velocity):
 def update(dt):
     for ball in balls:
         # Applying gravity
-        ball['velocity'][1] += GRAVITY * dt
+        ball['velocity'][1] -= GRAVITY * dt
         
         # Updating ball position
         ball['shape'].x += ball['velocity'][0] * dt
