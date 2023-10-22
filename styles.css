@@ -1,0 +1,18 @@
+body {
+    background: linear-gradient(to bottom, #1f0086, #02002a);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Courier New', Courier, monospace;
+    background-attachment: fixed;
+}
+
+.simulation-container {
+    border: #02002a 0.5vw solid;
+    border-radius: 1vw;
+    width: 45vw;
+    height: 45vw;
+    aspect-ratio: 1/1;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+}
