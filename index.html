@@ -9,8 +9,58 @@
         <script src="script.js"></script>
     </head>
     <body>
-        <div class="simulation-container" id="simulation-container">
-            <!-- Display goes here -->
+        <div class="content-wrapper">
+            <div class="simulation-container" id="simulation-container">
+                <!-- Display goes here -->
+            </div>
+                
+            <div class="sliders-container">
+                <div>
+                    <label>Number of Balls:</label>
+                    <input type="range" id="numBallsSlider" min="10" max="500" value="150">
+                    <span id="numBallsValue">180</span>
+                </div>
+                <div>
+                    <label>Gravity:</label>
+                    <input type="range" id="gravitySlider" min="0" max="2" value="1" step="0.01">
+                    <span id="gravityValue">0.002</span>
+                </div>
+                <div>
+                    <label>Effect Radius:</label>
+                    <input type="range" id="effectRadiusSlider" min="0" max="200" value="70" step="0.01">
+                    <span id="effectRadiusValue">60</span>
+                </div>
+                <div>
+                    <label>Viscosity:</label>
+                    <input type="range" id="viscositySlider" min="0.05" max="0.3" value="0.05" step="0.01">
+                    <span id="viscosityValue">3.5</span>
+                </div>
+                <div>
+                    <label>Border Force:</label>
+                    <input type="range" id="borderForceSlider" min="0.1" max="5" value="0.5" step="0.01">
+                    <span id="borderForceValue">0.2</span>
+                </div>
+                <div>
+                    <label>Rest Density:</label>
+                    <input type="range" id="restDensitySlider" min="0" max="200" value="80">
+                    <span id="restDensityValue">1</span>
+                </div>
+                <div>
+                    <label>Gas Constant:</label>
+                    <input type="range" id="gasConstantSlider" min="0" max="0.005" value="0.002", step="0.0001">
+                    <span id="gasConstantValue">1</span>
+                </div>
+                <div>
+                    <label>Influence Radius:</label>
+                    <input type="range" id="influenceRadiusSlider" min="0" max="1000" value="300">
+                    <span id="influenceRadiusValue">0.4</span>
+                </div>
+                <div>
+                    <label>Force Strength:</label>
+                    <input type="range" id="forceStrengthSlider" min="-1000" max="1000" value="300">
+                    <span id="forceStrengthValue">-400</span>
+                </div>
+            </div>
         </div>
     </body>
 </html>

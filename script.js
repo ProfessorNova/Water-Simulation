@@ -3,13 +3,23 @@ let p5_instance;
 let canvas_width;
 let canvas_height;
 
+let num_balls;
 let balls = [];
 let gravity;
 let effectRadius;
 let viscosity;
 let borderForce;
+let restDensity;
+let k;
+let influenceRadius;
+let forceStrength;
 
 let mouseIsPressed = false;
+
+function resetSimulation() {
+    background(0); // clear the background
+    createBalls(num_balls); // recreate the balls
+}
 
 function setup() {
     updateCanvasSize();
@@ -17,13 +27,89 @@ function setup() {
     p5_instance = createCanvas(canvas_width, canvas_height);
     p5_instance.parent("simulation-container");
 
-    gravity = canvas_height * 0.002;
-    effectRadius = canvas_width * 0.10;
-    viscosity = 0.05;
-    borderForce = canvas_width * 0.002;
+    if (window.innerWidth <= 768) {
+        effectRadius = 40;  // Replace with desired value for mobile
+        document.getElementById('effectRadiusValue').textContent = effectRadius;
+        document.getElementById('effectRadiusSlider').value = effectRadius;  // Update the slider position
+    }
 
-    createBalls(180);
-    p5_instance.mouseClicked(interactWithFluid);
+    // Read initial values from sliders
+    num_balls = parseInt(document.getElementById('numBallsSlider').value);
+    document.getElementById('numBallsValue').textContent = num_balls;
+
+    gravity = parseFloat(document.getElementById('gravitySlider').value);
+    document.getElementById('gravityValue').textContent = gravity;
+
+    effectRadius = parseFloat(document.getElementById('effectRadiusSlider').value);
+    document.getElementById('effectRadiusValue').textContent = effectRadius;
+
+    viscosity = parseFloat(document.getElementById('viscositySlider').value);
+    document.getElementById('viscosityValue').textContent = viscosity;
+
+    borderForce = parseFloat(document.getElementById('borderForceSlider').value);
+    document.getElementById('borderForceValue').textContent = borderForce;
+
+    restDensity = parseFloat(document.getElementById('restDensitySlider').value);
+    document.getElementById('restDensityValue').textContent = restDensity;
+
+    k = parseFloat(document.getElementById('gasConstantSlider').value);
+    document.getElementById('gasConstantValue').textContent = k;
+
+    influenceRadius = parseFloat(document.getElementById('influenceRadiusSlider').value);
+    document.getElementById('influenceRadiusValue').textContent = influenceRadius;
+
+    forceStrength = parseFloat(document.getElementById('forceStrengthSlider').value);
+    document.getElementById('forceStrengthValue').textContent = forceStrength;
+
+
+    // Add event listeners to the sliders
+    document.getElementById('numBallsSlider').addEventListener('input', function(e) {
+        num_balls = parseInt(e.target.value);
+        document.getElementById('numBallsValue').textContent = num_balls;
+        resetSimulation();
+    });
+    document.getElementById('gravitySlider').addEventListener('input', function(e) {
+        gravity = parseFloat(e.target.value);
+        document.getElementById('gravityValue').textContent = gravity;
+        resetSimulation();
+    });
+    document.getElementById('effectRadiusSlider').addEventListener('input', function(e) {
+        effectRadius = parseFloat(e.target.value);
+        document.getElementById('effectRadiusValue').textContent = effectRadius;
+        resetSimulation();
+    });
+    document.getElementById('viscositySlider').addEventListener('input', function(e) {
+        viscosity = parseFloat(e.target.value);
+        document.getElementById('viscosityValue').textContent = viscosity;
+        resetSimulation();
+    });
+    document.getElementById('borderForceSlider').addEventListener('input', function(e) {
+        borderForce = parseFloat(e.target.value);
+        document.getElementById('borderForceValue').textContent = borderForce;
+        resetSimulation();
+    });
+    document.getElementById('restDensitySlider').addEventListener('input', function(e) {
+        restDensity = parseFloat(e.target.value);
+        document.getElementById('restDensityValue').textContent = restDensity;
+        resetSimulation();
+    });
+    document.getElementById('gasConstantSlider').addEventListener('input', function(e) {
+        k = parseFloat(e.target.value);
+        document.getElementById('gasConstantValue').textContent = k;
+        resetSimulation();
+    });
+    document.getElementById('influenceRadiusSlider').addEventListener('input', function(e) {
+        influenceRadius = parseFloat(e.target.value);
+        document.getElementById('influenceRadiusValue').textContent = influenceRadius;
+        resetSimulation();
+    });
+    document.getElementById('forceStrengthSlider').addEventListener('input', function(e) {
+        forceStrength = parseFloat(e.target.value);
+        document.getElementById('forceStrengthValue').textContent = forceStrength;
+        resetSimulation();
+    });
+
+    resetSimulation();
 }
 
 function updateCanvasSize() {
@@ -66,8 +152,6 @@ function draw() {
     }
   
     // Step 2: Calculate pressure
-    const restDensity = 90; 
-    const k = 0.0005;
     for (let ball of balls) {
         ball.pressure = k * (ball.density - restDensity);
     }
@@ -135,7 +219,7 @@ function draw() {
 
         ball.ySpeed += gravity;
 
-        const maxSpeed = 1000; // to prevent balls from going too fast
+        const maxSpeed = 500; // to prevent balls from going too fast
         ball.xSpeed = constrain(ball.xSpeed, -maxSpeed, maxSpeed);
         ball.ySpeed = constrain(ball.ySpeed, -maxSpeed, maxSpeed);
 
@@ -155,9 +239,6 @@ function draw() {
 }
 
 function interactWithFluid() {
-    const influenceRadius = canvas_width * 0.4;
-    const forceStrength = -canvas_width;
-
     for (let ball of balls) {
         const dx = ball.x - mouseX;
         const dy = ball.y - mouseY;
@@ -174,17 +255,17 @@ function interactWithFluid() {
 }
 
 function mousePressed() {
-    mouseIsPressed = true; // Set to true when mouse is pressed
-    return false; // Prevent default browser behavior
+    mouseIsPressed = true;
+    return true;
 }
 
 function mouseReleased() {
-    mouseIsPressed = false; // Reset when mouse is released
-    return false; // Prevent default browser behavior
+    mouseIsPressed = false;
+    return true;
 }
 
 function windowResized() {
     updateCanvasSize();
     resizeCanvas(canvas_width, canvas_height);
-    createBalls(180); // Reset the balls upon resizing
+    resetSimulation();
 }
