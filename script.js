@@ -3,8 +3,9 @@ let p5_instance;
 let canvas_width;
 let canvas_height;
 
-let num_balls;
 let balls = [];
+
+let num_balls;
 let gravity;
 let effectRadius;
 let viscosity;
@@ -14,10 +15,14 @@ let k;
 let influenceRadius;
 let forceStrength;
 
+let grid;
+let gridSize;
+
 let mouseIsPressed = false;
 
 function resetSimulation() {
     background(0); // clear the background
+    createGrid();
     createBalls(num_balls); // recreate the balls
 }
 
@@ -124,28 +129,81 @@ function createBalls(count) {
         let newBall = {
             x: random(canvas_width),
             y: random(canvas_height),
-            radius: canvas_width * 0.02,
+            radius: canvas_width * 0.01,
             xSpeed: 0,
             ySpeed: 0,
             density: 0,
             pressure: 0
         };
         balls.push(newBall);
+        // Add the ball to the grid
+        // Adjust the grid coordinates to include the offset
+        let gridX = Math.floor((newBall.x / effectRadius) + 2);
+        let gridY = Math.floor((newBall.y / effectRadius) + 2);
+
+        // Ensure the grid position is within the new grid size
+        gridX = Math.max(0, Math.min(gridX, gridSize - 1));
+        gridY = Math.max(0, Math.min(gridY, gridSize - 1));
+
+        grid[gridX][gridY].push(newBall);
+    }
+}
+
+function createGrid(){
+    gridSize = Math.ceil(Math.max(canvas_width, canvas_height) / effectRadius) + 4;
+    grid = Array.from({length: gridSize}, () =>
+        Array.from({length: gridSize}, () => [])
+    );
+}
+
+function updateGrid() {
+    createGrid(); 
+    for (let ball of balls) {
+        // Calculate grid position with an offset to account for the expanded grid
+        let gridX = Math.floor((ball.x / effectRadius) + 2);
+        let gridY = Math.floor((ball.y / effectRadius) + 2);
+
+        // Ensure the grid position is within the new grid size
+        gridX = Math.max(0, Math.min(gridX, gridSize - 1));
+        gridY = Math.max(0, Math.min(gridY, gridSize - 1));
+
+        grid[gridX][gridY].push(ball);
+    }
+}
+
+function drawGrid() {
+    stroke(255);
+    strokeWeight(1);
+    for (let i = -2; i < gridSize - 2; i++) {
+        line((i + 2) * effectRadius, 0, (i + 2) * effectRadius, height);
+        line(0, (i + 2) * effectRadius, width, (i + 2) * effectRadius);
     }
 }
 
 function draw() {
     background(0);
+    updateGrid();
     colorMode(HSL);
 
     // Step 1: Calculate density
     for (let ball of balls) {
         ball.density = 0;
-        for (let otherBall of balls) {
-            if (ball !== otherBall) {
-                let r = dist(ball.x, ball.y, otherBall.x, otherBall.y);
-                if (r < effectRadius) {
-                    ball.density += effectRadius - r;  
+        // Adjust the grid coordinates to include the offset
+        let gridX = Math.floor(ball.x / effectRadius) + 2;
+        let gridY = Math.floor(ball.y / effectRadius) + 2;
+        for (let offsetX = -1; offsetX <= 1; offsetX++) {
+            for (let offsetY = -1; offsetY <= 1; offsetY++) {
+                let checkX = gridX + offsetX;
+                let checkY = gridY + offsetY;
+                if (checkX >= 0 && checkX < gridSize && checkY >= 0 && checkY < gridSize) {
+                    for (let otherBall of grid[checkX][checkY]) {
+                        if (ball !== otherBall) {
+                            let r = dist(ball.x, ball.y, otherBall.x, otherBall.y);
+                            if (r < effectRadius) {
+                                ball.density += effectRadius - r;  
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -157,44 +215,85 @@ function draw() {
     }
 
     // Step 3: Interaction
-    for (let i = 0; i < balls.length; i++) {
-        for (let j = i + 1; j < balls.length; j++) {
-            let ballA = balls[i];
-            let ballB = balls[j];
-            let distance = dist(ballA.x, ballA.y, ballB.x, ballB.y);
-            
-            if (distance < effectRadius) {
-                let overlap = effectRadius - distance;
-                let forceMagnitude = overlap * (ballA.pressure + ballB.pressure) * 0.5;
-                let dx = ballA.x - ballB.x;
-                let dy = ballA.y - ballB.y;
-                let len = sqrt(dx * dx + dy * dy);
-                dx /= len;
-                dy /= len;
-                
-                if (distance < ballA.radius + ballB.radius) {  
-                    forceMagnitude += (ballA.radius + ballB.radius - distance);
-                }
-                
-                ballA.xSpeed += forceMagnitude * dx;
-                ballA.ySpeed += forceMagnitude * dy;
-                ballB.xSpeed -= forceMagnitude * dx;
-                ballB.ySpeed -= forceMagnitude * dy;
+    for (let ball of balls) {
+        // Adjust the grid coordinates to include the offset
+        let gridX = Math.floor(ball.x / effectRadius) + 2;
+        let gridY = Math.floor(ball.y / effectRadius) + 2;
+        for (let offsetX = -1; offsetX <= 1; offsetX++) {
+            for (let offsetY = -1; offsetY <= 1; offsetY++) {
+                let checkX = gridX + offsetX;
+                let checkY = gridY + offsetY;
+                if (checkX >= 0 && checkX < gridSize && checkY >= 0 && checkY < gridSize) {
+                    for (let otherBall of grid[checkX][checkY]) {
+                        if (ball !== otherBall) {
+                            let distance = dist(ball.x, ball.y, otherBall.x, otherBall.y);
+                            if (distance < effectRadius) {
+                                let overlap = effectRadius - distance;
+                                let forceMagnitude = overlap * (ball.pressure + otherBall.pressure) * 0.5;
+                                let dx = ball.x - otherBall.x;
+                                let dy = ball.y - otherBall.y;
+                                let len = sqrt(dx * dx + dy * dy);
+                                dx /= len;
+                                dy /= len;
+                                
+                                if (distance < ball.radius + otherBall.radius) {  
+                                    forceMagnitude += (ball.radius + otherBall.radius - distance);
+                                }
+                                
+                                ball.xSpeed += forceMagnitude * dx;
+                                ball.ySpeed += forceMagnitude * dy;
+                                otherBall.xSpeed -= forceMagnitude * dx;
+                                otherBall.ySpeed -= forceMagnitude * dy;
 
-                // Add viscosity
-                let relVelX = ballB.xSpeed - ballA.xSpeed;
-                let relVelY = ballB.ySpeed - ballA.ySpeed;
-                ballA.xSpeed += relVelX * viscosity;
-                ballA.ySpeed += relVelY * viscosity;
-                ballB.xSpeed -= relVelX * viscosity;
-                ballB.ySpeed -= relVelY * viscosity;
+                                // Add viscosity
+                                let relVelX = otherBall.xSpeed - ball.xSpeed;
+                                let relVelY = otherBall.ySpeed - ball.ySpeed;
+                                ball.xSpeed += relVelX * viscosity;
+                                ball.ySpeed += relVelY * viscosity;
+                                otherBall.xSpeed -= relVelX * viscosity;
+                                otherBall.ySpeed -= relVelY * viscosity;
+                            }
+                        }
+                    }
+                }
             }
         }
+        // for (let j = i + 1; j < balls.length; j++) {
+        //     let ballA = balls[i];
+        //     let ballB = balls[j];
+        //     let distance = dist(ballA.x, ballA.y, ballB.x, ballB.y);
+            
+        //     if (distance < effectRadius) {
+        //         let overlap = effectRadius - distance;
+        //         let forceMagnitude = overlap * (ballA.pressure + ballB.pressure) * 0.5;
+        //         let dx = ballA.x - ballB.x;
+        //         let dy = ballA.y - ballB.y;
+        //         let len = sqrt(dx * dx + dy * dy);
+        //         dx /= len;
+        //         dy /= len;
+                
+        //         if (distance < ballA.radius + ballB.radius) {  
+        //             forceMagnitude += (ballA.radius + ballB.radius - distance);
+        //         }
+                
+        //         ballA.xSpeed += forceMagnitude * dx;
+        //         ballA.ySpeed += forceMagnitude * dy;
+        //         ballB.xSpeed -= forceMagnitude * dx;
+        //         ballB.ySpeed -= forceMagnitude * dy;
+
+        //         // Add viscosity
+        //         let relVelX = ballB.xSpeed - ballA.xSpeed;
+        //         let relVelY = ballB.ySpeed - ballA.ySpeed;
+        //         ballA.xSpeed += relVelX * viscosity;
+        //         ballA.ySpeed += relVelY * viscosity;
+        //         ballB.xSpeed -= relVelX * viscosity;
+        //         ballB.ySpeed -= relVelY * viscosity;
+        //     }
+        // }
     }
 
     // Move and draw balls
     for (let ball of balls) {
-
         // Distance from each border
         let leftDist = ball.x;
         let rightDist = width - ball.x;
@@ -248,8 +347,15 @@ function interactWithFluid() {
             const fx = dx / distance;
             const fy = dy / distance;
   
-            ball.xSpeed += fx * (forceStrength / distance);
-            ball.ySpeed += fy * (forceStrength / distance);
+            if (forceStrength > 0) {
+                ball.xSpeed += fx * (forceStrength / distance);
+                ball.ySpeed += fy * (forceStrength / distance);
+            } else {
+                if (distance > influenceRadius*0.6) {
+                    ball.xSpeed += fx * (forceStrength / distance);
+                    ball.ySpeed += fy * (forceStrength / distance);
+                }
+            }
         }
     }
 }
