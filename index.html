@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Water simulation</title>
         <link rel="stylesheet" href="styles.css">
+        <link rel="icon" href="favicon.png" type="image/png">
         <script src="https://cdn.jsdelivr.net/npm/p5@1.7.0/lib/p5.js"></script>
         <script src="script.js"></script>
     </head>
@@ -16,50 +17,52 @@
                 
             <div class="sliders-container">
                 <div>
-                    <label>Number of Balls:</label>
-                    <input type="range" id="numBallsSlider" min="10" max="1000" value="300">
-                    <span id="numBallsValue">180</span>
+                    <label title="Set number of particles">Number of Balls:</label>
+                    <input title="Set number of particles" type="range" id="numBallsSlider" min="10" max="1000" value="300">
+                    <span title="Set number of particles" id="numBallsValue">180</span>
                 </div>
                 <div>
-                    <label>Gravity:</label>
-                    <input type="range" id="gravitySlider" min="0" max="2" value="1" step="0.01">
-                    <span id="gravityValue">0.002</span>
+                    <label title="Increase or turn off gravity">Gravity:</label>
+                    <input title="Increase or turn off gravity" type="range" id="gravitySlider" min="0" max="2" value="1" step="0.01">
+                    <span title="Increase or turn off gravity" id="gravityValue">0.002</span>
                 </div>
                 <div>
-                    <label>Effect Radius:</label>
-                    <input type="range" id="effectRadiusSlider" min="40" max="80" value="60" step="0.01">
-                    <span id="effectRadiusValue">60</span>
+                    <label title="Set the range in which particles can effect each other">Effect Radius:</label>
+                    <input title="Set the range in which particles can effect each other" type="range" id="effectRadiusSlider" min="40" max="80" value="50" step="0.01">
+                    <span title="Set the range in which particles can effect each other" id="effectRadiusValue">60</span>
                 </div>
                 <div>
-                    <label>Viscosity:</label>
-                    <input type="range" id="viscositySlider" min="0.05" max="0.3" value="0.05" step="0.01">
-                    <span id="viscosityValue">3.5</span>
+                    <label title="Set the viscosity of the fluid">Viscosity:</label>
+                    <input title="Set the viscosity of the fluid" type="range" id="viscositySlider" min="0.05" max="0.3" value="0.05" step="0.01">
+                    <span title="Set the viscosity of the fluid" id="viscosityValue">3.5</span>
                 </div>
                 <div>
-                    <label>Border Force:</label>
-                    <input type="range" id="borderForceSlider" min="0.1" max="5" value="0.5" step="0.01">
-                    <span id="borderForceValue">0.2</span>
+                    <label title="Set how much force the screen border will apply to the fluid">Border Force:</label>
+                    <input title="Set how much force the screen border will apply to the fluid" type="range" id="borderForceSlider" min="0.1" max="5" value="1" step="0.01">
+                    <span title="Set how much force the screen border will apply to the fluid" id="borderForceValue">0.2</span>
                 </div>
                 <div>
-                    <label>Rest Density:</label>
-                    <input type="range" id="restDensitySlider" min="0" max="200" value="80">
-                    <span id="restDensityValue">1</span>
+                    <label title="How much the particles will seek closeness">Rest Density:</label>
+                    <input title="How much the particles will seek closeness" type="range" id="restDensitySlider" min="0" max="200" value="100">
+                    <span title="How much the particles will seek closeness" id="restDensityValue">1</span>
                 </div>
                 <div>
-                    <label>Gas Constant:</label>
-                    <input type="range" id="gasConstantSlider" min="0" max="0.002" value="0.001", step="0.0001">
-                    <span id="gasConstantValue">1</span>
+                    <label title="This constant will keep the fluid from collapsing">Gas Constant:</label>
+                    <input title="This constant will keep the fluid from collapsing" type="range" id="gasConstantSlider" min="0" max="0.002" value="0.001", step="0.0001">
+                    <span title="This constant will keep the fluid from collapsing" id="gasConstantValue">1</span>
+                </div>
+                <p>For interacting with Fluid by clicking on the screen:</p>
+                <div>
+                    <label title="Range of your influence on the fluid">Influence Radius:</label>
+                    <input title="Range of your influence on the fluid" type="range" id="influenceRadiusSlider" min="0" max="1000" value="200">
+                    <span title="Range of your influence on the fluid" id="influenceRadiusValue">0.4</span>
                 </div>
                 <div>
-                    <label>Influence Radius:</label>
-                    <input type="range" id="influenceRadiusSlider" min="0" max="1000" value="300">
-                    <span id="influenceRadiusValue">0.4</span>
+                    <label title="Negative values will pull fluid in and positive values will push it out">Force Strength:</label>
+                    <input title="Negative values will pull fluid in and positive values will push it out" type="range" id="forceStrengthSlider" min="-1000" max="1000" value="300">
+                    <span title="Negative values will pull fluid in and positive values will push it out" id="forceStrengthValue">-400</span>
                 </div>
-                <div>
-                    <label>Force Strength:</label>
-                    <input type="range" id="forceStrengthSlider" min="-1000" max="1000" value="300">
-                    <span id="forceStrengthValue">-400</span>
-                </div>
+                <button id="reload_button" onclick=location.reload(true)>Reset Values</button>
             </div>
         </div>
     </body>

@@ -181,6 +181,7 @@ function drawGrid() {
 }
 
 function draw() {
+    stroke(0);
     background(0);
     updateGrid();
     colorMode(HSL);
@@ -338,6 +339,11 @@ function draw() {
 }
 
 function interactWithFluid() {
+    // draw a circle around the mouse
+    stroke(255);
+    strokeWeight(1);
+    noFill();
+    ellipse(mouseX, mouseY, influenceRadius * 2, influenceRadius * 2);
     for (let ball of balls) {
         const dx = ball.x - mouseX;
         const dy = ball.y - mouseY;
